@@ -17,35 +17,21 @@ from launch import LaunchDescription
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch_ros.actions import Node
+from controller_manager.launch_utils import generate_load_controller_launch_description
+
+import os
+
+from ament_index_python.packages import get_package_share_directory
+
 
 
 def generate_launch_description():
 
-    position_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["position_controller", "--controller-manager", "/controller_manager"],
-    )
+  return generate_load_controller_launch_description(
+          controller_name='test_position_controller',
+          controller_type='passthrough_controller/PassthroughController',
+          controller_params_file=os.path.join(
+              get_package_share_directory('ros2_control_demo_example_12'),
+              'config', 'rrbot_chained_controllers.yaml')
+      )
 
-    forward_position_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["forward_position_controller", "--controller-manager", "/controller_manager"],
-    )
-
-    # Delay start of forward_position_controller_spawner after `position_controller_spawner`
-    delay_forward_position_controller_spawner_after_position_controller_spawner = (
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=position_controller_spawner,
-                on_exit=[forward_position_controller_spawner],
-            )
-        )
-    )
-
-    nodes = [
-        position_controller_spawner,
-        delay_forward_position_controller_spawner_after_position_controller_spawner,
-    ]
-
-    return LaunchDescription(nodes)

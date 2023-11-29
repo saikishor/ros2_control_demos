@@ -24,11 +24,9 @@ controller_interface::CallbackReturn PassthroughController::on_init()
   try
   {
     param_listener_ = std::make_shared<ParamListener>(get_node());
-    params_ = param_listener_->get_params();
   }
   catch (const std::exception & e)
   {
-    fprintf(stderr, "Exception thrown during init stage with message: %s \n", e.what());
     return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
@@ -54,6 +52,15 @@ controller_interface::InterfaceConfiguration PassthroughController::state_interf
 controller_interface::CallbackReturn PassthroughController::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
+  try
+  {
+    params_ = param_listener_->get_params();
+  }
+  catch (const std::exception & e)
+  {
+    fprintf(stderr, "Exception thrown during init stage with message: %s \n", e.what());
+    return controller_interface::CallbackReturn::ERROR;
+  }
   params_ = param_listener_->get_params();
   command_interface_names_ = params_.interfaces;
 
@@ -132,6 +139,7 @@ bool PassthroughController::on_set_chained_mode(bool /*chained_mode*/) { return 
 controller_interface::return_type PassthroughController::update_and_write_commands(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
+  RCLCPP_INFO(this->get_node()->get_logger(), "Running");
   for (size_t i = 0; i < command_interfaces_.size(); ++i)
   {
     if (!std::isnan(reference_interfaces_[i]))

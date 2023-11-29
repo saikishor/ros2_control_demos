@@ -8,3 +8,40 @@ passthrough_controller:
           unique<>: null,
         }
   }
+  joints: {
+    type: string_array,
+    default_value: [],
+    description: "Names of joints used by the controller",
+    validation: {
+      not_empty<>: null,
+      unique<>: null,
+    }
+  }
+  gensys: {
+    type: string_array,
+    default_value: [],
+    description: "Names of gensys used by the controller",
+    validation: {
+      not_empty<>: null,
+      unique<>: null,
+    }
+  }
+  gains:
+    __map_joints:
+      p: {
+        type: double,
+        default_value: 10.0,
+        description: "Proportional gain for PID",
+      validation: {
+        bounds: [0.1, 100.0]
+      }}
+
+  guess:
+    __map_gensys:
+      pro: {
+        type: double,
+        default_value: 10.0,
+        description: "Proportional gain for PID",
+      validation: {
+        bounds: [0.1, 100.0]
+      }}

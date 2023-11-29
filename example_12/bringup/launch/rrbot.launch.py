@@ -43,7 +43,7 @@ def generate_launch_description():
         [
             FindPackageShare("ros2_control_demo_example_12"),
             "config",
-            "rrbot_chained_controllers.yaml",
+            "controller_manager.yaml",
         ]
     )
     rviz_config_file = PathJoinSubstitution(
